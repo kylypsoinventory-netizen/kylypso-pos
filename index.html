@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Kylypso Marketing POS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+
+  <!-- PWA manifest: tells Android this is an installable standalone app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#14324A">
+
+  <!-- iOS support (Safari "Add to Home Screen" also respects these) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kylypso POS">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #14324A;
+      overflow: hidden;
+    }
+    #posFrame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    /* Simple splash while the POS loads inside the frame */
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: #14324A;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+    #splash img {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin-bottom: 12px;
+    }
+    #splash .title { font-weight: 700; font-size: 16px; letter-spacing: 0.3px; }
+    #splash .sub { font-size: 11px; opacity: 0.7; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <div id="splash">
+    <img src="icon-192.png" alt="Kylypso Marketing">
+    <div class="title">Kylypso Marketing</div>
+    <div class="sub">Point of Sale</div>
+  </div>
+
+  <!--
+    IMPORTANT: Replace the src below with your own Apps Script /exec URL
+    if you ever redeploy and get a new one.
+  -->
+  <iframe id="posFrame"
+    src="https://script.google.com/macros/s/AKfycbyLl0qHVRSebYVMEW-bjj5zmyQCDoi8UnDNr3RtY03KEsjRSq28GPZ78x8oADKXoLPQ_Q/exec"
+    allow="camera; clipboard-write"
+    title="Kylypso Marketing POS">
+  </iframe>
+
+  <script>
+    var frame = document.getElementById('posFrame');
+    var splash = document.getElementById('splash');
+    frame.addEventListener('load', function () {
+      splash.style.opacity = '0';
+      setTimeout(function () { splash.style.display = 'none'; }, 300);
+    });
+
+    // Register a minimal service worker so Chrome treats this as a
+    // fully-qualified installable PWA (helps trigger the standalone
+    // "Add to Home screen" prompt with no address bar, instead of a
+    // plain bookmark shortcut).
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    }
+  </script>
+
+</body>
+</html>
