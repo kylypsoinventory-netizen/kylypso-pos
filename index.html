@@ -70,18 +70,33 @@
     if you ever redeploy and get a new one.
   -->
   <iframe id="posFrame"
-    src="https://script.google.com/macros/s/AKfycbyLl0qHVRSebYVMEW-bjj5zmyQCDoi8UnDNr3RtY03KEsjRSq28GPZ78x8oADKXoLPQ_Q/exec"
     allow="camera; clipboard-write"
     title="Kylypso Marketing POS">
   </iframe>
 
   <script>
-    var frame = document.getElementById('posFrame');
-    var splash = document.getElementById('splash');
-    frame.addEventListener('load', function () {
-      splash.style.opacity = '0';
-      setTimeout(function () { splash.style.display = 'none'; }, 300);
-    });
+    var POS_URL = "https://script.google.com/macros/s/AKfycbyLl0qHVRSebYVMEW-bjj5zmyQCDoi8UnDNr3RtY03KEsjRSq28GPZ78x8oADKXoLPQ_Q/exec";
+
+    // iOS Safari blocks the third-party auth cookie Google needs when the
+    // POS is loaded inside an iframe (Intelligent Tracking Prevention),
+    // which causes a 401 error. Android Chrome doesn't enforce this as
+    // strictly, so the iframe works fine there. Fix: on iOS, skip the
+    // iframe entirely and do a top-level redirect instead - it stays
+    // inside the installed home-screen app with no real address bar.
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      document.getElementById('posFrame').remove();
+      window.location.replace(POS_URL);
+    } else {
+      var frame = document.getElementById('posFrame');
+      frame.src = POS_URL;
+      var splash = document.getElementById('splash');
+      frame.addEventListener('load', function () {
+        splash.style.opacity = '0';
+        setTimeout(function () { splash.style.display = 'none'; }, 300);
+      });
+    }
 
     // Register a minimal service worker so Chrome treats this as a
     // fully-qualified installable PWA (helps trigger the standalone
